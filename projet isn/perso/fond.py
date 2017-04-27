@@ -66,11 +66,12 @@ class Bomberman(pygame.sprite.Sprite):
         self.dos = pygame.image.load(self.sprites+"dos.png").convert()
         self.face = pygame.image.load(self.sprites+"face.png").convert()
         self.gauche = pygame.image.load(self.sprites+"gauche.png").convert()
-        self.rect = self.droite.get_rect(topleft = [50,50])
+        self.rect = self.droite.get_rect(topleft=[50, 50])
         self.droite.set_colorkey(BG_SPRITES)
         self.dos.set_colorkey(BG_SPRITES)
         self.face.set_colorkey(BG_SPRITES)
         self.gauche.set_colorkey(BG_SPRITES)
+        self.pos = [0,0]
         self.vitesse_x = 0
         self.vitesse_y = 0
         self.direction = "face"
@@ -151,8 +152,9 @@ class Bomberman(pygame.sprite.Sprite):
             self.frame = 0
 
     def mouvement(self):
-        self.rect.topleft[0] += self.vitesse_x
-        self.rect.topleft[1] += self.vitesse_y
+        self.pos[0] += self.vitesse_x
+        self.pos[1] += self.vitesse_y
+        self.rect.topleft = [self.pos[0], self.pos[1]]
 
 joueur1 = Bomberman()
 
@@ -167,7 +169,7 @@ list_bloc = pygame.sprite.Group()
 for bloc in blocs:
     list_bloc.add(bloc)
 
-collide = pygame.sprite.collide_rect_ratio(0.2)
+#collide = pygame.sprite.collide_rect_ratio(0.2)
 
 while not done:
     # --- Main event loop
@@ -184,19 +186,19 @@ while not done:
     #joueur2.vitesse_x = 0
     #joueur2.vitesse_y = 0
 
-    if touches[joueur1.touches[0]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False, collide):
+    if touches[joueur1.touches[0]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
         joueur1.direction = "gauche"
         joueur1.vitesse_x -= 5
         joueur1.vitesse_y = 0
-    if touches[joueur1.touches[1]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False, collide):
+    if touches[joueur1.touches[1]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
         joueur1.direction = "droite"
         joueur1.vitesse_x += 5
         joueur1.vitesse_y = 0
-    if touches[joueur1.touches[2]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False, collide):
+    if touches[joueur1.touches[2]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
         joueur1.direction = "dos"
         joueur1.vitesse_y -= 5
         joueur1.vitesse_x = 0
-    if touches[joueur1.touches[3]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False, collide):
+    if touches[joueur1.touches[3]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
         joueur1.direction = "face"
         joueur1.vitesse_y += 5
         joueur1.vitesse_x = 0
