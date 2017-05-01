@@ -12,10 +12,6 @@ BG_SPRITES = (33, 57, 148)
 
 x = 128
 y = 120
-f_montant1 = False
-f_montant2 = False
-f_montant3 = False
-f_montant4 = False
 i = 0
 j = 0
 m = 0
@@ -63,8 +59,11 @@ class SpriteSheet(object):
 
 class Bomberman(pygame.sprite.Sprite):
 
-    def __init__(self, touches=[pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_KP1], sprites="1"):
+    def __init__(self, touches=[pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_KP1], sprites="1", slash=None):
         super().__init__()
+        self.i =0
+        self.j = 0
+        self.last_direction = "face"
         self.touches = touches
         self.sprites = sprites + "/"
         self.droite = pygame.image.load(self.sprites+"droite.png").convert()
@@ -82,6 +81,7 @@ class Bomberman(pygame.sprite.Sprite):
         self.direction = "face"
         self.moving = False
         self.attacking = False
+        self.slash = slash
 
         #self.face = pygame.transform.scale(self.face, (28, 48))
 
@@ -156,10 +156,94 @@ class Bomberman(pygame.sprite.Sprite):
         elif self.direction == "droite" and self.vitesse_x == 0:
             screen.blit(self.droite, [self.pos[0]+11, self.pos[1]-8])
 
-    def mouvement(self):
+    def move(self):
+        if self.direction == "droite" and self.j < 17:
+            self.vitesse_x = 4
+            self.j += 1
+        if self.j >= 17:
+            self.j = 0
+            self.moving = False
+            self.vitesse_x = 0
+
+        if self.direction == "gauche" and self.j < 17:
+            self.vitesse_x = -4
+            self.j += 1
+        if self.j >= 17:
+            self.j = 0
+            self.moving = False
+            self.vitesse_x = 0
+
+        if self.direction == "face" and self.j < 17:
+            self.vitesse_y = 4
+            self.j += 1
+        if self.j >= 17:
+            self.j = 0
+            self.moving = False
+            self.vitesse_y = 0
+
+        if self.direction == "dos" and self.j < 17:
+            self.vitesse_y = -4
+            self.j += 1
+        if self.j >= 17:
+            self.j = 0
+            self.moving = False
+            self.vitesse_y = 0
+
         self.pos[0] += self.vitesse_x
         self.pos[1] += self.vitesse_y
         self.rect.topleft = [self.pos[0], self.pos[1]]
+
+    def attack(self):
+        if self.direction == "droite":
+            self.slash.rect = (self.pos[0]+64, self.pos[1])
+        if self.direction == "gauche":
+            self.slash.rect = (self.pos[0]-64, self.pos[1])
+        if self.direction == "dos":
+            self.slash.rect = (self.pos[0], self.pos[1]-64)
+        if self.direction == "face":
+            self.slash.rect = (self.pos[0], self.pos[1]+64)
+
+    def update(self, pressed_keys=None):
+        if pressed_keys[self.touches[0]]:
+            if self.direction == "gauche" and self.direction == self.last_direction:
+                self.moving = True
+            else:
+                self.direction = "gauche"
+        if pressed_keys[self.touches[1]]:
+            if self.direction == "droite" and self.direction == self.last_direction:
+                self.moving = True
+            else:
+                self.direction = "droite"
+        if pressed_keys[self.touches[2]]:
+            if self.direction == "dos" and self.direction == self.last_direction:
+                self.moving = True
+            else:
+                self.direction = "dos"
+        if pressed_keys[self.touches[3]]:
+            if self.direction == "face" and self.direction == self.last_direction:
+                self.moving = True
+            else:
+                self.direction = "face"
+        if pressed_keys[self.touches[4]]:
+            self.attacking = True
+
+        if self.direction == "gauche" and not pressed_keys[self.touches[0]]:
+            self.last_direction = "gauche"
+        if self.direction == "droite" and not pressed_keys[self.touches[1]]:
+            self.last_direction = "droite"
+        if self.direction == "dos" and not pressed_keys[self.touches[2]]:
+            self.last_direction = "dos"
+        if self.direction == "face" and not pressed_keys[self.touches[3]]:
+            self.last_direction = "face"
+
+    def afficher_slash(self):
+        if self.i < 9:
+            self.slash.afficher()
+            self.i += 1
+        else:
+            self.i = 0
+            self.slash.rect = (-128, -128)
+            self.attacking = False
 
 class Slash(pygame.sprite.Sprite):
 
@@ -171,6 +255,8 @@ class Slash(pygame.sprite.Sprite):
         self.rect = pygame.Rect(128, 128, 64, 64)
         self.frame = 0
         self.v_frame = 0
+        self.in_cd = False
+        self.cd = 0
 
     def afficher(self):
         if self.frame >= len(self.animation):
@@ -181,9 +267,13 @@ class Slash(pygame.sprite.Sprite):
             self.frame += 1
             self.v_frame = 0
 
-joueur1 = Bomberman()
-slash = Slash()
-#joueur2 = Bomberman([pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s], "2")
+slash1 = Slash()
+slash1.rect = (-128, -128, 64, 64)
+joueur1 = Bomberman(slash=slash1)
+
+slash2 = Slash()
+slash2.rect = (1088, -128, 64, 64)
+joueur2 = Bomberman([pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_t], "2", slash2)
 
 blocs = []
 k = 0
@@ -204,14 +294,13 @@ while not done:
         if event.type == pygame.QUIT:
             done = True
 
-    touches = pygame.key.get_pressed()
-
     joueur1.vitesse_x = 0
     joueur1.vitesse_y = 0
 
-    #joueur2.vitesse_x = 0
+    joueur2.vitesse_x = 0
+    joueur2.vitesse_y = 0
 
-    if not joueur1.moving and not joueur1.attacking:
+    """if not joueur1.moving and not joueur1.attacking:
         if touches[joueur1.touches[0]] and joueur1.direction == "gauche" and not f_montant1:
             joueur1.moving = True
         if touches[joueur1.touches[0]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
@@ -245,7 +334,7 @@ while not done:
             f_montant4 = False
 
         if touches[joueur1.touches[4]]:
-            joueur1.attacking = True
+            joueur1.attacking = True"""
 
     """if touches[joueur2.touches[0]] and not pygame.sprite.spritecollide(joueur2, list_bloc, False):
         joueur2.direction = "gauche"
@@ -266,6 +355,8 @@ while not done:
 
     # --- Game logic
 
+    touches = pygame.key.get_pressed()
+
     u = 0
     for t in range(5):
         while i <= 5:
@@ -274,40 +365,38 @@ while not done:
             u += 1
         i = 0
 
+    if not joueur1.moving and not joueur1.attacking:
+        joueur1.update(touches)
+
+    if not joueur2.moving and not joueur2.attacking:
+        joueur2.update(touches)
+
     if joueur1.moving:
-        if joueur1.direction == "droite" and j < 17:
-            joueur1.vitesse_x = 4
-            j += 1
-        if j >= 17:
-            j = 0
-            joueur1.moving = False
-            joueur1.vitesse_x = 0
+        joueur1.move()
 
-        if joueur1.direction == "gauche" and j < 17:
-            joueur1.vitesse_x = -4
-            j += 1
-        if j >= 17:
-            j = 0
-            joueur1.moving = False
-            joueur1.vitesse_x = 0
+    if joueur2.moving:
+        joueur2.move()
 
-        if joueur1.direction == "face" and j < 17:
-            joueur1.vitesse_y = 4
-            j += 1
-        if j >= 17:
-            j = 0
-            joueur1.moving = False
-            joueur1.vitesse_y = 0
+    if joueur1.attacking and not joueur1.moving and not joueur1.slash.in_cd:
+        joueur1.attack()
+        joueur1.slash.in_cd = True
 
-        if joueur1.direction == "dos" and j < 17:
-            joueur1.vitesse_y = -4
-            j += 1
-        if j >= 17:
-            j = 0
-            joueur1.moving = False
-            joueur1.vitesse_y = 0
+    if joueur2.attacking and not joueur2.moving:
+        joueur2.attack()
 
-    clock.tick(60)
+    if joueur1.slash.in_cd == True:
+        if joueur1.slash.cd < 30:
+            joueur1.slash.cd += 1
+        else:
+            joueur1.slash.cd = 0
+            joueur1.slash.in_cd = False
+
+    if joueur2.slash.in_cd == True:
+        if joueur2.slash.cd < 30:
+            joueur2.slash.cd += 1
+        else:
+            joueur2.slash.cd = 0
+            joueur2.slash.in_cd = False
 
     # --- Drawing code
     screen.fill(BLACK)
@@ -317,34 +406,16 @@ while not done:
     for bloc in blocs:
         bloc.afficher()
 
-    joueur1.mouvement()
     joueur1.afficher()
-    print(joueur1.rect)
+    joueur2.afficher()
 
-    if joueur1.attacking:
-        if joueur1.direction == "droite":
-            slash.rect = (joueur1.pos[0]+64, joueur1.pos[1])
-        if joueur1.direction == "gauche":
-            slash.rect = (joueur1.pos[0]-64, joueur1.pos[1])
-        if joueur1.direction == "dos":
-            slash.rect = (joueur1.pos[0], joueur1.pos[1]-64)
-        if joueur1.direction == "face":
-            slash.rect = (joueur1.pos[0], joueur1.pos[1]+64)
+    joueur1.afficher_slash()
+    joueur2.afficher_slash()
 
-        if m < 9:
-            slash.afficher()
-            m += 1
-        else:
-            m = 0
-            joueur1.attacking = False
-
-    #print(joueur1.attacking)
-    #print(m)
-
-    #joueur2.mouvement()
-    #joueur2.afficher()
     pygame.display.flip()
 
-    clock.tick(60)
+    clock.tick(30)
+
+    print(joueur2.moving)
 
 pygame.quit()
