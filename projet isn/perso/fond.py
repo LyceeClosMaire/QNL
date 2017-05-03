@@ -20,6 +20,7 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((960, 816))
 background = pygame.image.load("fond.png").convert()
 
+
 class Bloc(pygame.sprite.Sprite):
 
     def __init__(self):
@@ -30,12 +31,13 @@ class Bloc(pygame.sprite.Sprite):
     def afficher(self):
         screen.blit(self.image, self.rect)
 
+
 class SpriteSheet(object):
 
-    def __init__(self, file_name, BG):
-        self.BG = BG
+    def __init__(self, file_name, bg):
+        self.bg = bg
         self.sprite_sheet = pygame.image.load(file_name).convert()
-        self.sprite_sheet.set_colorkey(self.BG)
+        self.sprite_sheet.set_colorkey(self.bg)
         self.i = 0
         self.list_images = []
 
@@ -56,6 +58,7 @@ class SpriteSheet(object):
             self.i += 1
         self.i = 1
         return self.list_images
+
 
 class Bomberman(pygame.sprite.Sprite):
 
@@ -143,7 +146,7 @@ class Bomberman(pygame.sprite.Sprite):
             if self.v_frame > 3:
                 self.frame += 1
                 self.v_frame = 0
-        elif self.direction == "gauche" and self.vitesse_x ==0:
+        elif self.direction == "gauche" and self.vitesse_x == 0:
             screen.blit(self.gauche, [self.pos[0]+11, self.pos[1]-8])
         elif self.direction == "droite" and self.vitesse_x !=0:
             if self.frame >= len(self.animation_d):
@@ -244,6 +247,7 @@ class Bomberman(pygame.sprite.Sprite):
             self.i = 0
             self.slash.rect = (-128, -128)
             self.attacking = False
+
 
 class Slash(pygame.sprite.Sprite):
 
@@ -384,14 +388,14 @@ while not done:
     if joueur2.attacking and not joueur2.moving:
         joueur2.attack()
 
-    if joueur1.slash.in_cd == True:
+    if joueur1.slash.in_cd:
         if joueur1.slash.cd < 30:
             joueur1.slash.cd += 1
         else:
             joueur1.slash.cd = 0
             joueur1.slash.in_cd = False
 
-    if joueur2.slash.in_cd == True:
+    if joueur2.slash.in_cd:
         if joueur2.slash.cd < 30:
             joueur2.slash.cd += 1
         else:
@@ -406,8 +410,15 @@ while not done:
     for bloc in blocs:
         bloc.afficher()
 
-    joueur1.afficher()
-    joueur2.afficher()
+    if joueur1.pos[1] < joueur2.pos[1]:
+        joueur1.afficher()
+        joueur2.afficher()
+    elif joueur2.pos[1] < joueur1.pos[1]:
+        joueur2.afficher()
+        joueur1.afficher()
+    else:
+        joueur2.afficher()
+        joueur1.afficher()
 
     joueur1.afficher_slash()
     joueur2.afficher_slash()
