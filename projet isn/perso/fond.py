@@ -423,6 +423,37 @@ while not done:
         elif joueur2.direction == "face":
             joueur2.pos[1] -= joueur2.vitesse_y
 
+    if joueur1.pos[0] < 64:
+        joueur1.pos[0] -= joueur1.vitesse_x
+
+    if joueur1.pos[0] > 832:
+        joueur1.pos[0] -= joueur1.vitesse_x
+
+    if joueur1.pos[1] < 56:
+        joueur1.pos[1] -= joueur1.vitesse_y
+
+    if joueur1.pos[1] > 696:
+        joueur1.pos[1] -= joueur1.vitesse_y
+
+    if joueur2.pos[0] < 64:
+        joueur2.pos[0] -= joueur2.vitesse_x
+
+    if joueur2.pos[0] > 832:
+        joueur2.pos[0] -= joueur2.vitesse_x
+
+    if joueur2.pos[1] < 56:
+        joueur2.pos[1] -= joueur2.vitesse_y
+
+    if joueur2.pos[1] > 696:
+        joueur2.pos[1] -= joueur2.vitesse_y
+
+
+
+
+
+
+
+
     # --- Drawing code
     screen.fill(BLACK)
 
