@@ -402,6 +402,27 @@ while not done:
             joueur2.slash.cd = 0
             joueur2.slash.in_cd = False
 
+
+    if pygame.sprite.spritecollide(joueur1, list_bloc, False):
+        if joueur1.direction == "droite":
+            joueur1.pos[0] -= joueur1.vitesse_x
+        elif joueur1.direction == "gauche":
+            joueur1.pos[0] -= joueur1.vitesse_x
+        elif joueur1.direction == "dos":
+            joueur1.pos[1] -= joueur1.vitesse_y
+        elif joueur1.direction == "face":
+            joueur1.pos[1] -= joueur1.vitesse_y
+
+    if pygame.sprite.spritecollide(joueur2, list_bloc, False):
+        if joueur2.direction == "droite":
+            joueur2.pos[0] -= joueur2.vitesse_x
+        elif joueur2.direction == "gauche":
+            joueur2.pos[0] -= joueur2.vitesse_x
+        elif joueur2.direction == "dos":
+            joueur2.pos[1] -= joueur2.vitesse_y
+        elif joueur2.direction == "face":
+            joueur2.pos[1] -= joueur2.vitesse_y
+
     # --- Drawing code
     screen.fill(BLACK)
 
