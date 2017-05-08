@@ -31,6 +31,15 @@ class Bloc(pygame.sprite.Sprite):
     def afficher(self):
         screen.blit(self.image, self.rect)
 
+class Blocdestru(pygame.sprite.Sprite):
+
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("bloc_destructible.png").convert()
+        self.rect = self.image.get_rect(topleft=[50, 50])
+
+    def afficher(self):
+        screen.blit(self.image, self.rect)
 
 class SpriteSheet(object):
 
@@ -279,16 +288,32 @@ slash2 = Slash()
 slash2.rect = (1088, -128, 64, 64)
 joueur2 = Bomberman([pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_t], "2", slash2)
 
+blocdestru=Blocdestru()
 blocs = []
 k = 0
 while k <= 29:
     blocs.append(Bloc())
     k += 1
 
+u = 0
+for t in range(5):
+    while i <= 5:
+        blocs[u].rect.topleft = [x + (128*i), y + (128 * t)]
+        i += 1
+        u += 1
+    i = 0
+
+blocdestru.rect.topleft = [192,120]
+
 list_bloc = pygame.sprite.Group()
+list_blocdestru = pygame.sprite.Group()
+list_blocdestru.add(blocdestru)
+
 
 for bloc in blocs:
     list_bloc.add(bloc)
+
+list_bloc.add(blocdestru)
 
 #collide = pygame.sprite.collide_rect_ratio(0.2)
 
@@ -361,13 +386,7 @@ while not done:
 
     touches = pygame.key.get_pressed()
 
-    u = 0
-    for t in range(5):
-        while i <= 5:
-            blocs[u].rect.topleft = [x + (128*i), y + (128 * t)]
-            i += 1
-            u += 1
-        i = 0
+
 
     if not joueur1.moving and not joueur1.attacking:
         joueur1.update(touches)
@@ -448,6 +467,11 @@ while not done:
         joueur2.pos[1] -= joueur2.vitesse_y
 
 
+    listedeblocsquiserarentreeencolisionavec = pygame.sprite.spritecollide(joueur1.slash,list_blocdestru, True)
+
+
+
+
 
 
 
@@ -461,6 +485,8 @@ while not done:
 
     for bloc in blocs:
         bloc.afficher()
+
+    blocdestru.afficher()
 
     if joueur1.pos[1] < joueur2.pos[1]:
         joueur1.afficher()
