@@ -386,8 +386,6 @@ while not done:
 
     touches = pygame.key.get_pressed()
 
-
-
     if not joueur1.moving and not joueur1.attacking:
         joueur1.update(touches)
 
