@@ -299,30 +299,55 @@ slash2 = Slash()
 slash2.rect.topleft = (1088, -128)
 joueur2 = Bomberman([pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_t], "2", slash2)
 
-blocdestru=Blocdestru()
 blocs = []
+blocs_destru = []
+
 k = 0
-while k <= 29:
+while k < 30:
     blocs.append(Bloc())
+    k += 1
+
+k = 0
+while k < 72:
+    blocs_destru.append(Blocdestru)
     k += 1
 
 u = 0
 for t in range(5):
-    while i <= 5:
+    while i < 6:
         blocs[u].rect.topleft = [x + (128*i), y + (128 * t)]
         i += 1
         u += 1
     i = 0
 
-blocdestru.rect.topleft = [128, 56]
+u = 0
+x = 128
+y = 56
+for t in range(6):
+    while i < 6:
+        blocs_destru[u].rect.topleft = [x + (128*i), y + (128 * t)]
+        i += 1
+        u += 1
+    i = 0
+u += 1
+
+x = 64
+y = 56
+for t in range(5):
+    while i < 7:
+        blocs_destru[u].rect.topleft = [x + (128*i), y + (128 * (t+5))]
+        i += 1
+        u += 1
+    i = 0
 
 list_bloc = pygame.sprite.Group()
 list_blocdestru = pygame.sprite.Group()
-list_blocdestru.add(blocdestru)
-
 
 for bloc in blocs:
     list_bloc.add(bloc)
+
+for bloc in blocs_destru:
+    list_blocdestru.add(bloc)
 
 
 #collide = pygame.sprite.collide_rect_ratio(0.2)
@@ -531,6 +556,6 @@ while not done:
 
     clock.tick(30)
 
-    print(joueur2.moving)
+    print(type(blocdestru))
 
 pygame.quit()
