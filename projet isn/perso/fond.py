@@ -1,6 +1,4 @@
-﻿# Créé par CLERCL, le 27/03/2017 en Python 3.2
-
-import pygame
+﻿import pygame
 
 done = False
 
@@ -31,6 +29,7 @@ class Bloc(pygame.sprite.Sprite):
     def afficher(self):
         screen.blit(self.image, self.rect)
 
+
 class Blocdestru(pygame.sprite.Sprite):
 
     def __init__(self):
@@ -40,6 +39,7 @@ class Blocdestru(pygame.sprite.Sprite):
 
     def afficher(self):
         screen.blit(self.image, self.rect)
+
 
 class SpriteSheet(object):
 
@@ -207,13 +207,13 @@ class Bomberman(pygame.sprite.Sprite):
 
     def attack(self):
         if self.direction == "droite":
-            self.slash.rect = (self.pos[0]+64, self.pos[1])
+            self.slash.rect.topleft = (self.pos[0]+64, self.pos[1])
         if self.direction == "gauche":
-            self.slash.rect = (self.pos[0]-64, self.pos[1])
+            self.slash.rect.topleft = (self.pos[0]-64, self.pos[1])
         if self.direction == "dos":
-            self.slash.rect = (self.pos[0], self.pos[1]-64)
+            self.slash.rect.topleft = (self.pos[0], self.pos[1]-64)
         if self.direction == "face":
-            self.slash.rect = (self.pos[0], self.pos[1]+64)
+            self.slash.rect.topleft = (self.pos[0], self.pos[1]+64)
 
     def update(self, pressed_keys=None):
         if pressed_keys[self.touches[0]]:
@@ -254,7 +254,7 @@ class Bomberman(pygame.sprite.Sprite):
             self.i += 1
         else:
             self.i = 0
-            self.slash.rect = (-128, -128)
+            self.slash.rect.topleft = (-128, -128)
             self.attacking = False
 
 
@@ -281,11 +281,11 @@ class Slash(pygame.sprite.Sprite):
             self.v_frame = 0
 
 slash1 = Slash()
-slash1.rect = (-128, -128, 64, 64)
+slash1.rect.topleft = (-128, -128)
 joueur1 = Bomberman(slash=slash1)
 
 slash2 = Slash()
-slash2.rect = (1088, -128, 64, 64)
+slash2.rect.topleft = (1088, -128)
 joueur2 = Bomberman([pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_t], "2", slash2)
 
 blocdestru=Blocdestru()
@@ -303,7 +303,7 @@ for t in range(5):
         u += 1
     i = 0
 
-blocdestru.rect.topleft = [192,120]
+blocdestru.rect.topleft = [192, 120]
 
 list_bloc = pygame.sprite.Group()
 list_blocdestru = pygame.sprite.Group()
