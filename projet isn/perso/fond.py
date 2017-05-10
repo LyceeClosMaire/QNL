@@ -30,15 +30,26 @@ class Bloc(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
 
+
 class Blocdestru(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("bloc_destructible.png").convert()
-        self.rect = self.image.get_rect(topleft=[50, 50])
+        self.image_solide = pygame.image.load("bloc_destructible.png").convert()
+        self.image_casse = pygame.image.load("bloc_casse.png").convert()
+        self.rect = self.image_solide.get_rect(topleft=[50, 50])
+        self.etat = "solide"
+
 
     def afficher(self):
-        screen.blit(self.image, self.rect)
+        if self.etat == "solide":
+            screen.blit(self.image_solide, self.rect)
+
+        elif self.etat == "casse":
+            screen.blit(self.image_casse, self.rect)
+
+
+
 
 
 class SpriteSheet(object):
@@ -303,7 +314,7 @@ for t in range(5):
         u += 1
     i = 0
 
-blocdestru.rect.topleft = [192, 120]
+blocdestru.rect.topleft = [128, 56]
 
 list_bloc = pygame.sprite.Group()
 list_blocdestru = pygame.sprite.Group()
@@ -313,7 +324,6 @@ list_blocdestru.add(blocdestru)
 for bloc in blocs:
     list_bloc.add(bloc)
 
-list_bloc.add(blocdestru)
 
 #collide = pygame.sprite.collide_rect_ratio(0.2)
 
@@ -430,6 +440,22 @@ while not done:
         elif joueur1.direction == "face":
             joueur1.pos[1] -= joueur1.vitesse_y
 
+    collision = pygame.sprite.spritecollide(joueur1, list_blocdestru, False)
+    if collision:
+        if collision[0].etat == "solide":
+            if joueur1.direction == "droite":
+                joueur1.pos[0] -= joueur1.vitesse_x
+            elif joueur1.direction == "gauche":
+                joueur1.pos[0] -= joueur1.vitesse_x
+            elif joueur1.direction == "dos":
+                joueur1.pos[1] -= joueur1.vitesse_y
+            elif joueur1.direction == "face":
+                joueur1.pos[1] -= joueur1.vitesse_y
+
+        elif collision[0].etat == "casse":
+            print()
+
+
     if pygame.sprite.spritecollide(joueur2, list_bloc, False):
         if joueur2.direction == "droite":
             joueur2.pos[0] -= joueur2.vitesse_x
@@ -465,7 +491,9 @@ while not done:
         joueur2.pos[1] -= joueur2.vitesse_y
 
 
-    listedeblocsquiserarentreeencolisionavec = pygame.sprite.spritecollide(joueur1.slash,list_blocdestru, True)
+    if pygame.sprite.spritecollide(joueur1.slash,list_blocdestru, False):
+        blocdestru.etat = "casse"
+
 
 
 
