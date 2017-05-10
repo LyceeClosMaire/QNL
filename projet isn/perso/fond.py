@@ -309,7 +309,7 @@ while k < 30:
 
 k = 0
 while k < 72:
-    blocs_destru.append(Blocdestru)
+    blocs_destru.append(Blocdestru())
     k += 1
 
 u = 0
@@ -516,19 +516,6 @@ while not done:
         joueur2.pos[1] -= joueur2.vitesse_y
 
 
-    if pygame.sprite.spritecollide(joueur1.slash,list_blocdestru, False):
-        blocdestru.etat = "casse"
-
-
-
-
-
-
-
-
-
-
-
     # --- Drawing code
     screen.fill(BLACK)
 
@@ -537,7 +524,8 @@ while not done:
     for bloc in blocs:
         bloc.afficher()
 
-    blocdestru.afficher()
+    for bloc in blocs_destru:
+        bloc.afficher()
 
     if joueur1.pos[1] < joueur2.pos[1]:
         joueur1.afficher()
@@ -555,7 +543,5 @@ while not done:
     pygame.display.flip()
 
     clock.tick(30)
-
-    print(type(blocdestru))
 
 pygame.quit()
