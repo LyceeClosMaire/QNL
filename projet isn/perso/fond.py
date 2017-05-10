@@ -24,7 +24,7 @@ class Bloc(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("bloc.png").convert()
-        self.rect = self.image.get_rect(topleft=[50, 50])
+        self.rect = self.image.get_rect(topleft=[0, 0])
 
     def afficher(self):
         screen.blit(self.image, self.rect)
@@ -37,7 +37,7 @@ class Blocdestru(pygame.sprite.Sprite):
         super().__init__()
         self.image_solide = pygame.image.load("bloc_destructible.png").convert()
         self.image_casse = pygame.image.load("bloc_casse.png").convert()
-        self.rect = self.image_solide.get_rect(topleft=[50, 50])
+        self.rect = self.image_solide.get_rect(topleft=[0, 0])
         self.etat = "solide"
 
 
@@ -308,7 +308,7 @@ while k < 30:
     k += 1
 
 k = 0
-while k < 72:
+while k < 71:
     blocs_destru.append(Blocdestru())
     k += 1
 
@@ -329,15 +329,15 @@ for t in range(6):
         i += 1
         u += 1
     i = 0
-u += 1
 
 x = 64
-y = 56
+y = 120
 for t in range(5):
     while i < 7:
-        blocs_destru[u].rect.topleft = [x + (128*i), y + (128 * (t+5))]
+        blocs_destru[u].rect.topleft = [x + (128*i), y + (128 * t)]
         i += 1
         u += 1
+        print(u, i)
     i = 0
 
 list_bloc = pygame.sprite.Group()
@@ -363,59 +363,6 @@ while not done:
 
     joueur2.vitesse_x = 0
     joueur2.vitesse_y = 0
-
-    """if not joueur1.moving and not joueur1.attacking:
-        if touches[joueur1.touches[0]] and joueur1.direction == "gauche" and not f_montant1:
-            joueur1.moving = True
-        if touches[joueur1.touches[0]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
-            joueur1.direction = "gauche"
-            f_montant1 = True
-        if not touches[joueur1.touches[0]]:
-            f_montant1 = False
-
-        if touches[joueur1.touches[1]] and joueur1.direction == "droite" and not f_montant2:
-            joueur1.moving = True
-        if touches[joueur1.touches[1]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
-            joueur1.direction = "droite"
-            f_montant2 = True
-        if not touches[joueur1.touches[1]]:
-            f_montant2 = False
-
-        if touches[joueur1.touches[2]] and joueur1.direction == "dos" and not f_montant3:
-            joueur1.moving = True
-        if touches[joueur1.touches[2]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
-            joueur1.direction = "dos"
-            f_montant3 = True
-        if not touches[joueur1.touches[2]]:
-            f_montant3 = False
-
-        if touches[joueur1.touches[3]] and joueur1.direction == "face" and f_montant4 == False:
-            joueur1.moving = True
-        if touches[joueur1.touches[3]] and not pygame.sprite.spritecollide(joueur1, list_bloc, False):
-            joueur1.direction = "face"
-            f_montant4 = True
-        if not touches[joueur1.touches[3]]:
-            f_montant4 = False
-
-        if touches[joueur1.touches[4]]:
-            joueur1.attacking = True"""
-
-    """if touches[joueur2.touches[0]] and not pygame.sprite.spritecollide(joueur2, list_bloc, False):
-        joueur2.direction = "gauche"
-        joueur2.vitesse_x = -1
-        joueur2.vitesse_y = 0
-    elif touches[joueur2.touches[1]] and not pygame.sprite.spritecollide(joueur2, list_bloc, False):
-        joueur2.direction = "droite"
-        joueur2.vitesse_x = 1
-        joueur2.vitesse_y = 0
-    elif touches[joueur2.touches[2]] and not pygame.sprite.spritecollide(joueur2, list_bloc, False):
-        joueur2.direction = "dos"
-        joueur2.vitesse_y = -1
-        joueur2.vitesse_x = 0
-    elif touches[joueur2.touches[3]] and not pygame.sprite.spritecollide(joueur2, list_bloc, False):
-        joueur2.direction = "face"
-        joueur2.vitesse_y = 1
-        joueur2.vitesse_x = 0"""
 
     # --- Game logic
 
@@ -465,21 +412,21 @@ while not done:
         elif joueur1.direction == "face":
             joueur1.pos[1] -= joueur1.vitesse_y
 
-    collision = pygame.sprite.spritecollide(joueur1, list_blocdestru, False)
+    collision = pygame.sprite.collide_rect(joueur1, list_blocdestru)
+
     if collision:
-        if collision[0].etat == "solide":
-            if joueur1.direction == "droite":
-                joueur1.pos[0] -= joueur1.vitesse_x
-            elif joueur1.direction == "gauche":
-                joueur1.pos[0] -= joueur1.vitesse_x
-            elif joueur1.direction == "dos":
-                joueur1.pos[1] -= joueur1.vitesse_y
-            elif joueur1.direction == "face":
-                joueur1.pos[1] -= joueur1.vitesse_y
+            if collision[0].etat == "solide":
+                if joueur1.direction == "droite":
+                    joueur1.pos[0] -= joueur1.vitesse_x
+                elif joueur1.direction == "gauche":
+                    joueur1.pos[0] -= joueur1.vitesse_x
+                elif joueur1.direction == "dos":
+                    joueur1.pos[1] -= joueur1.vitesse_y
+                elif joueur1.direction == "face":
+                    joueur1.pos[1] -= joueur1.vitesse_y
 
-        elif collision[0].etat == "casse":
-            print()
-
+            elif collision[0].etat == "casse":
+                print()
 
     if pygame.sprite.spritecollide(joueur2, list_bloc, False):
         if joueur2.direction == "droite":
