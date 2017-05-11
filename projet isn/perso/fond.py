@@ -125,18 +125,6 @@ class Bomberman(pygame.sprite.Sprite):
         sprite_sheet = SpriteSheet(self.sprites+"anim_gauche.png", BG_SPRITES)
         self.animation_g = sprite_sheet.get_all_images(48, 72, 15, 8)
 
-        """image = sprite_sheet.get_image(0, 0, 14, 24)
-        self.animation_b.append(image)
-        image = sprite_sheet.get_image(23, 0, 14, 24)
-        self.animation_b.append(image)
-        image = sprite_sheet.get_image(46, 0, 14, 24)
-        self.animation_b.append(image)
-        image = sprite_sheet.get_image(70, 0, 14, 24)
-        self.animation_b.append(image)
-        image = sprite_sheet.get_image(90, 0, 14, 24)
-        self.animation_b.append(image)
-        image = sprite_sheet.get_image(110, 0, 14, 24)
-        self.animation_b.append(image)"""
 
     def afficher(self):
         if self.direction == "face" and self.vitesse_y != 0:
@@ -299,6 +287,7 @@ joueur1 = Bomberman(slash=slash1)
 slash2 = Slash()
 slash2.rect.topleft = (1088, -128)
 joueur2 = Bomberman([pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_t], "2", slash2)
+joueur2.pos = [192,56]
 
 blocs = []
 blocs_destru = []
@@ -338,7 +327,6 @@ for t in range(5):
         blocs_destru[u].rect.topleft = [x + (128*i), y + (128 * t)]
         i += 1
         u += 1
-        print(u, i)
     i = 0
 
 list_bloc = pygame.sprite.Group()
@@ -411,8 +399,10 @@ while not done:
             joueur1.pos[1] -= joueur1.vitesse_y
 
     collision = pygame.sprite.spritecollide(joueur1.slash, list_blocdestru, False)
-    print(collision)
+    if len(collision) > 0:
+        collision[0].etat = "casse"
 
+    collision = pygame.sprite.spritecollide(joueur1, list_blocdestru, False)
     if len(collision) > 0:
             if collision[0].etat == "solide":
                 if joueur1.direction == "droite":
@@ -423,8 +413,7 @@ while not done:
                     joueur1.pos[1] -= joueur1.vitesse_y
                 elif joueur1.direction == "face":
                     joueur1.pos[1] -= joueur1.vitesse_y
-            elif collision[0].etat == "casse":
-                print()
+
 
     if pygame.sprite.spritecollide(joueur2, list_bloc, False):
         if joueur2.direction == "droite":
@@ -435,6 +424,47 @@ while not done:
             joueur2.pos[1] -= joueur2.vitesse_y
         elif joueur2.direction == "face":
             joueur2.pos[1] -= joueur2.vitesse_y
+
+    collision = pygame.sprite.spritecollide(joueur2.slash, list_blocdestru, False)
+    if len(collision) > 0:
+        collision[0].etat = "casse"
+
+    collision = pygame.sprite.spritecollide(joueur2, list_blocdestru, False)
+    if len(collision) > 0:
+            if collision[0].etat == "solide":
+                if joueur2.direction == "droite":
+                    joueur2.pos[0] -= joueur2.vitesse_x
+                elif joueur2.direction == "gauche":
+                    joueur2.pos[0] -= joueur2.vitesse_x
+                elif joueur2.direction == "dos":
+                    joueur2.pos[1] -= joueur2.vitesse_y
+                elif joueur2.direction == "face":
+                    joueur2.pos[1] -= joueur2.vitesse_y
+
+    if pygame.sprite.collide_rect(joueur1, joueur2):
+        if joueur1.direction == "droite":
+            joueur1.pos[0] -= joueur1.vitesse_x
+        elif joueur1.direction == "gauche":
+            joueur1.pos[0] -= joueur1.vitesse_x
+        elif joueur1.direction == "dos":
+            joueur1.pos[1] -= joueur1.vitesse_y
+        elif joueur1.direction == "face":
+            joueur1.pos[1] -= joueur1.vitesse_y
+
+        if joueur2.direction == "droite":
+            joueur2.pos[0] -= joueur2.vitesse_x
+        elif joueur2.direction == "gauche":
+            joueur2.pos[0] -= joueur2.vitesse_x
+        elif joueur2.direction == "dos":
+            joueur2.pos[1] -= joueur2.vitesse_y
+        elif joueur2.direction == "face":
+            joueur2.pos[1] -= joueur2.vitesse_y
+
+
+
+
+
+
 
     if joueur1.pos[0] < 64:
         joueur1.pos[0] -= joueur1.vitesse_x
