@@ -14,6 +14,7 @@ i = 0
 j = 0
 m = 0
 
+
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((960, 816))
 background = pygame.image.load("fond.png").convert()
@@ -349,9 +350,6 @@ for bloc in blocs:
 for bloc in blocs_destru:
     list_blocdestru.add(bloc)
 
-
-#collide = pygame.sprite.collide_rect_ratio(0.2)
-
 while not done:
     # --- Main event loop
     for event in pygame.event.get():
@@ -412,9 +410,10 @@ while not done:
         elif joueur1.direction == "face":
             joueur1.pos[1] -= joueur1.vitesse_y
 
-    collision = pygame.sprite.collide_rect(joueur1, list_blocdestru)
+    collision = pygame.sprite.spritecollide(joueur1.slash, list_blocdestru, False)
+    print(collision)
 
-    if collision:
+    if len(collision) > 0:
             if collision[0].etat == "solide":
                 if joueur1.direction == "droite":
                     joueur1.pos[0] -= joueur1.vitesse_x
@@ -424,7 +423,6 @@ while not done:
                     joueur1.pos[1] -= joueur1.vitesse_y
                 elif joueur1.direction == "face":
                     joueur1.pos[1] -= joueur1.vitesse_y
-
             elif collision[0].etat == "casse":
                 print()
 
