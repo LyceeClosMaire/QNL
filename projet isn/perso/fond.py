@@ -40,6 +40,7 @@ class Blocdestru(pygame.sprite.Sprite):
         self.image_casse = pygame.image.load("bloc_casse.png").convert()
         self.rect = self.image_solide.get_rect(topleft=[0, 0])
         self.etat = "solide"
+        self.timer = 0
 
 
     def afficher(self):
@@ -354,6 +355,7 @@ while not done:
 
     touches = pygame.key.get_pressed()
 
+
     if not joueur1.moving and not joueur1.attacking:
         joueur1.update(touches)
 
@@ -489,6 +491,16 @@ while not done:
 
     if joueur2.pos[1] > 696:
         joueur2.pos[1] -= joueur2.vitesse_y
+
+
+    for bloc in blocs_destru:
+        if bloc.etat == "casse":
+            bloc.timer += 1
+        if bloc.timer > 240:
+            bloc.timer = 0
+            bloc.etat = "solide"
+
+
 
 
     # --- Drawing code
