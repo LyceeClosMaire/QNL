@@ -31,16 +31,16 @@ class Bloc(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
 
-
 class Blocdestru(pygame.sprite.Sprite):
 
-    def __init__(self):
+    def __init__(self, attention):
         super().__init__()
         self.image_solide = pygame.image.load("bloc_destructible.png").convert()
         self.image_casse = pygame.image.load("bloc_casse.png").convert()
         self.rect = self.image_solide.get_rect(topleft=[0, 0])
-        self.etat = "solide"
         self.timer = 0
+        self.etat = "solide"
+        self.attention = attention
 
 
     def afficher(self):
@@ -50,8 +50,21 @@ class Blocdestru(pygame.sprite.Sprite):
         elif self.etat == "casse":
             screen.blit(self.image_casse, self.rect)
 
+    def afficher_attention(self):
+        self.attention.rect.center = self.rect.center
+        self.attention.afficher()
 
 
+class Attention(pygame.sprite.Sprite):
+
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("bloc.png").convert()
+        self.image.set_colorkey(BG_SPRITES)
+        self.rect = self.image.get_rect(topleft=[0, 0])
+
+    def afficher(self):
+        screen.blit(self.image, self.rect)
 
 
 class SpriteSheet(object):
@@ -300,7 +313,7 @@ while k < 30:
 
 k = 0
 while k < 71:
-    blocs_destru.append(Blocdestru())
+    blocs_destru.append(Blocdestru(Attention()))
     k += 1
 
 u = 0
@@ -462,12 +475,6 @@ while not done:
         elif joueur2.direction == "face":
             joueur2.pos[1] -= joueur2.vitesse_y
 
-
-
-
-
-
-
     if joueur1.pos[0] < 64:
         joueur1.pos[0] -= joueur1.vitesse_x
 
@@ -492,16 +499,14 @@ while not done:
     if joueur2.pos[1] > 696:
         joueur2.pos[1] -= joueur2.vitesse_y
 
-
     for bloc in blocs_destru:
         if bloc.etat == "casse":
             bloc.timer += 1
+        if bloc.timer > 210:
+            bloc.afficher_attention()
         if bloc.timer > 240:
             bloc.timer = 0
             bloc.etat = "solide"
-
-
-
 
     # --- Drawing code
     screen.fill(BLACK)
