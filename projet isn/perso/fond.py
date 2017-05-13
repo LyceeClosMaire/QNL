@@ -121,6 +121,8 @@ class Bomberman(pygame.sprite.Sprite):
         self.attacking = False
         self.slash = slash
         self.dead = False
+        self.knockback = False
+        self.knockback_f_montant = False
 
         #self.face = pygame.transform.scale(self.face, (28, 48))
 
@@ -425,6 +427,10 @@ while not done:
         if joueur1.pos[1] > 696:
             joueur1.pos[1] -= joueur1.vitesse_y
 
+        if pygame.sprite.collide_rect(joueur1.slash, joueur2) and not joueur1.knockback_f_montant:
+            joueur2.knockback = True
+            joueur1.knockback_f_montant = True
+
     if not joueur2.dead:
 
         if not joueur2.moving and not joueur2.attacking:
@@ -469,25 +475,6 @@ while not done:
                     elif joueur2.direction == "face":
                         joueur2.pos[1] -= joueur2.vitesse_y
 
-        if pygame.sprite.collide_rect(joueur1, joueur2):
-            if joueur1.direction == "droite":
-                joueur1.pos[0] -= joueur1.vitesse_x
-            elif joueur1.direction == "gauche":
-                joueur1.pos[0] -= joueur1.vitesse_x
-            elif joueur1.direction == "dos":
-                joueur1.pos[1] -= joueur1.vitesse_y
-            elif joueur1.direction == "face":
-                joueur1.pos[1] -= joueur1.vitesse_y
-
-            if joueur2.direction == "droite":
-                joueur2.pos[0] -= joueur2.vitesse_x
-            elif joueur2.direction == "gauche":
-                joueur2.pos[0] -= joueur2.vitesse_x
-            elif joueur2.direction == "dos":
-                joueur2.pos[1] -= joueur2.vitesse_y
-            elif joueur2.direction == "face":
-                joueur2.pos[1] -= joueur2.vitesse_y
-
         if joueur2.pos[0] < 64:
             joueur2.pos[0] -= joueur2.vitesse_x
 
@@ -498,6 +485,36 @@ while not done:
             joueur2.pos[1] -= joueur2.vitesse_y
 
         if joueur2.pos[1] > 696:
+            joueur2.pos[1] -= joueur2.vitesse_y
+
+        if joueur2.knockback == True:
+            if joueur1.direction == "droite":
+                joueur2.pos[0] += 64
+            if joueur1.direction == "gauche":
+                joueur2.pos[0] -= 64
+            if joueur1.direction == "face":
+                joueur2.pos[1] = 64
+            if joueur1.direction == "dos":
+                joueur2.pos[1] += 64
+            joueur2.knockback = False
+
+    if pygame.sprite.collide_rect(joueur1, joueur2):
+        if joueur1.direction == "droite":
+            joueur1.pos[0] -= joueur1.vitesse_x
+        elif joueur1.direction == "gauche":
+            joueur1.pos[0] -= joueur1.vitesse_x
+        elif joueur1.direction == "dos":
+            joueur1.pos[1] -= joueur1.vitesse_y
+        elif joueur1.direction == "face":
+            joueur1.pos[1] -= joueur1.vitesse_y
+
+        if joueur2.direction == "droite":
+            joueur2.pos[0] -= joueur2.vitesse_x
+        elif joueur2.direction == "gauche":
+            joueur2.pos[0] -= joueur2.vitesse_x
+        elif joueur2.direction == "dos":
+            joueur2.pos[1] -= joueur2.vitesse_y
+        elif joueur2.direction == "face":
             joueur2.pos[1] -= joueur2.vitesse_y
 
     for bloc in blocs_destru:
@@ -514,6 +531,12 @@ while not done:
             bloc.timer = 0
             bloc.etat = "solide"
 
+    if joueur1.knockback_f_montant == True:
+        if i < 9:
+            i += 1
+        else:
+            i = 0
+            joueur1.knockback_f_montant = False
     # --- Drawing code
     screen.fill(BLACK)
 
