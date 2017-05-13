@@ -59,7 +59,7 @@ class Attention(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("bloc.png").convert()
+        self.image = pygame.image.load("attention.png").convert()
         self.image.set_colorkey(BG_SPRITES)
         self.rect = self.image.get_rect(topleft=[0, 0])
 
@@ -502,8 +502,7 @@ while not done:
     for bloc in blocs_destru:
         if bloc.etat == "casse":
             bloc.timer += 1
-        if bloc.timer > 210:
-            bloc.afficher_attention()
+
         if bloc.timer > 240:
             bloc.timer = 0
             bloc.etat = "solide"
@@ -518,6 +517,8 @@ while not done:
 
     for bloc in blocs_destru:
         bloc.afficher()
+        if bloc.timer > 210:
+            bloc.afficher_attention()
 
     if joueur1.pos[1] < joueur2.pos[1]:
         joueur1.afficher()
