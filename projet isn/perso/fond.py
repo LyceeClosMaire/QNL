@@ -120,6 +120,7 @@ class Bomberman(pygame.sprite.Sprite):
         self.moving = False
         self.attacking = False
         self.slash = slash
+        self.dead = False
 
         #self.face = pygame.transform.scale(self.face, (28, 48))
 
@@ -368,57 +369,40 @@ while not done:
 
     touches = pygame.key.get_pressed()
 
+    if not joueur1.dead:
+        if not joueur1.moving and not joueur1.attacking:
+            joueur1.update(touches)
 
-    if not joueur1.moving and not joueur1.attacking:
-        joueur1.update(touches)
+        if joueur1.moving:
+            joueur1.move()
 
-    if not joueur2.moving and not joueur2.attacking:
-        joueur2.update(touches)
+        if joueur1.attacking and not joueur1.moving and not joueur1.slash.in_cd:
+            joueur1.attack()
+            joueur1.slash.in_cd = True
 
-    if joueur1.moving:
-        joueur1.move()
+        if joueur1.slash.in_cd:
+            if joueur1.slash.cd < 30:
+                joueur1.slash.cd += 1
+            else:
+                joueur1.slash.cd = 0
+                joueur1.slash.in_cd = False
 
-    if joueur2.moving:
-        joueur2.move()
+        collision = pygame.sprite.spritecollide(joueur1.slash, list_blocdestru, False)
+        if len(collision) > 0:
+            collision[0].etat = "casse"
 
-    if joueur1.attacking and not joueur1.moving and not joueur1.slash.in_cd:
-        joueur1.attack()
-        joueur1.slash.in_cd = True
+        if pygame.sprite.spritecollide(joueur1, list_bloc, False):
+            if joueur1.direction == "droite":
+                joueur1.pos[0] -= joueur1.vitesse_x
+            elif joueur1.direction == "gauche":
+                joueur1.pos[0] -= joueur1.vitesse_x
+            elif joueur1.direction == "dos":
+                joueur1.pos[1] -= joueur1.vitesse_y
+            elif joueur1.direction == "face":
+                joueur1.pos[1] -= joueur1.vitesse_y
 
-    if joueur2.attacking and not joueur2.moving:
-        joueur2.attack()
-
-    if joueur1.slash.in_cd:
-        if joueur1.slash.cd < 30:
-            joueur1.slash.cd += 1
-        else:
-            joueur1.slash.cd = 0
-            joueur1.slash.in_cd = False
-
-    if joueur2.slash.in_cd:
-        if joueur2.slash.cd < 30:
-            joueur2.slash.cd += 1
-        else:
-            joueur2.slash.cd = 0
-            joueur2.slash.in_cd = False
-
-
-    if pygame.sprite.spritecollide(joueur1, list_bloc, False):
-        if joueur1.direction == "droite":
-            joueur1.pos[0] -= joueur1.vitesse_x
-        elif joueur1.direction == "gauche":
-            joueur1.pos[0] -= joueur1.vitesse_x
-        elif joueur1.direction == "dos":
-            joueur1.pos[1] -= joueur1.vitesse_y
-        elif joueur1.direction == "face":
-            joueur1.pos[1] -= joueur1.vitesse_y
-
-    collision = pygame.sprite.spritecollide(joueur1.slash, list_blocdestru, False)
-    if len(collision) > 0:
-        collision[0].etat = "casse"
-
-    collision = pygame.sprite.spritecollide(joueur1, list_blocdestru, False)
-    if len(collision) > 0:
+        collision = pygame.sprite.spritecollide(joueur1, list_blocdestru, False)
+        if len(collision) > 0:
             if collision[0].etat == "solide":
                 if joueur1.direction == "droite":
                     joueur1.pos[0] -= joueur1.vitesse_x
@@ -429,79 +413,102 @@ while not done:
                 elif joueur1.direction == "face":
                     joueur1.pos[1] -= joueur1.vitesse_y
 
-
-    if pygame.sprite.spritecollide(joueur2, list_bloc, False):
-        if joueur2.direction == "droite":
-            joueur2.pos[0] -= joueur2.vitesse_x
-        elif joueur2.direction == "gauche":
-            joueur2.pos[0] -= joueur2.vitesse_x
-        elif joueur2.direction == "dos":
-            joueur2.pos[1] -= joueur2.vitesse_y
-        elif joueur2.direction == "face":
-            joueur2.pos[1] -= joueur2.vitesse_y
-
-    collision = pygame.sprite.spritecollide(joueur2.slash, list_blocdestru, False)
-    if len(collision) > 0:
-        collision[0].etat = "casse"
-
-    collision = pygame.sprite.spritecollide(joueur2, list_blocdestru, False)
-    if len(collision) > 0:
-            if collision[0].etat == "solide":
-                if joueur2.direction == "droite":
-                    joueur2.pos[0] -= joueur2.vitesse_x
-                elif joueur2.direction == "gauche":
-                    joueur2.pos[0] -= joueur2.vitesse_x
-                elif joueur2.direction == "dos":
-                    joueur2.pos[1] -= joueur2.vitesse_y
-                elif joueur2.direction == "face":
-                    joueur2.pos[1] -= joueur2.vitesse_y
-
-    if pygame.sprite.collide_rect(joueur1, joueur2):
-        if joueur1.direction == "droite":
+        if joueur1.pos[0] < 64:
             joueur1.pos[0] -= joueur1.vitesse_x
-        elif joueur1.direction == "gauche":
+
+        if joueur1.pos[0] > 832:
             joueur1.pos[0] -= joueur1.vitesse_x
-        elif joueur1.direction == "dos":
-            joueur1.pos[1] -= joueur1.vitesse_y
-        elif joueur1.direction == "face":
+
+        if joueur1.pos[1] < 56:
             joueur1.pos[1] -= joueur1.vitesse_y
 
-        if joueur2.direction == "droite":
+        if joueur1.pos[1] > 696:
+            joueur1.pos[1] -= joueur1.vitesse_y
+
+    if not joueur2.dead:
+
+        if not joueur2.moving and not joueur2.attacking:
+            joueur2.update(touches)
+
+        if joueur2.moving:
+            joueur2.move()
+
+        if joueur2.attacking and not joueur2.moving:
+            joueur2.attack()
+
+        if joueur2.slash.in_cd:
+            if joueur2.slash.cd < 30:
+                joueur2.slash.cd += 1
+            else:
+                joueur2.slash.cd = 0
+                joueur2.slash.in_cd = False
+
+        if pygame.sprite.spritecollide(joueur2, list_bloc, False):
+            if joueur2.direction == "droite":
+                joueur2.pos[0] -= joueur2.vitesse_x
+            elif joueur2.direction == "gauche":
+                joueur2.pos[0] -= joueur2.vitesse_x
+            elif joueur2.direction == "dos":
+                joueur2.pos[1] -= joueur2.vitesse_y
+            elif joueur2.direction == "face":
+                joueur2.pos[1] -= joueur2.vitesse_y
+
+        collision = pygame.sprite.spritecollide(joueur2.slash, list_blocdestru, False)
+        if len(collision) > 0:
+            collision[0].etat = "casse"
+
+        collision = pygame.sprite.spritecollide(joueur2, list_blocdestru, False)
+        if len(collision) > 0:
+                if collision[0].etat == "solide":
+                    if joueur2.direction == "droite":
+                        joueur2.pos[0] -= joueur2.vitesse_x
+                    elif joueur2.direction == "gauche":
+                        joueur2.pos[0] -= joueur2.vitesse_x
+                    elif joueur2.direction == "dos":
+                        joueur2.pos[1] -= joueur2.vitesse_y
+                    elif joueur2.direction == "face":
+                        joueur2.pos[1] -= joueur2.vitesse_y
+
+        if pygame.sprite.collide_rect(joueur1, joueur2):
+            if joueur1.direction == "droite":
+                joueur1.pos[0] -= joueur1.vitesse_x
+            elif joueur1.direction == "gauche":
+                joueur1.pos[0] -= joueur1.vitesse_x
+            elif joueur1.direction == "dos":
+                joueur1.pos[1] -= joueur1.vitesse_y
+            elif joueur1.direction == "face":
+                joueur1.pos[1] -= joueur1.vitesse_y
+
+            if joueur2.direction == "droite":
+                joueur2.pos[0] -= joueur2.vitesse_x
+            elif joueur2.direction == "gauche":
+                joueur2.pos[0] -= joueur2.vitesse_x
+            elif joueur2.direction == "dos":
+                joueur2.pos[1] -= joueur2.vitesse_y
+            elif joueur2.direction == "face":
+                joueur2.pos[1] -= joueur2.vitesse_y
+
+        if joueur2.pos[0] < 64:
             joueur2.pos[0] -= joueur2.vitesse_x
-        elif joueur2.direction == "gauche":
+
+        if joueur2.pos[0] > 832:
             joueur2.pos[0] -= joueur2.vitesse_x
-        elif joueur2.direction == "dos":
+
+        if joueur2.pos[1] < 56:
             joueur2.pos[1] -= joueur2.vitesse_y
-        elif joueur2.direction == "face":
+
+        if joueur2.pos[1] > 696:
             joueur2.pos[1] -= joueur2.vitesse_y
-
-    if joueur1.pos[0] < 64:
-        joueur1.pos[0] -= joueur1.vitesse_x
-
-    if joueur1.pos[0] > 832:
-        joueur1.pos[0] -= joueur1.vitesse_x
-
-    if joueur1.pos[1] < 56:
-        joueur1.pos[1] -= joueur1.vitesse_y
-
-    if joueur1.pos[1] > 696:
-        joueur1.pos[1] -= joueur1.vitesse_y
-
-    if joueur2.pos[0] < 64:
-        joueur2.pos[0] -= joueur2.vitesse_x
-
-    if joueur2.pos[0] > 832:
-        joueur2.pos[0] -= joueur2.vitesse_x
-
-    if joueur2.pos[1] < 56:
-        joueur2.pos[1] -= joueur2.vitesse_y
-
-    if joueur2.pos[1] > 696:
-        joueur2.pos[1] -= joueur2.vitesse_y
 
     for bloc in blocs_destru:
         if bloc.etat == "casse":
             bloc.timer += 1
+
+        if bloc.etat == "solide" and bloc.rect.topleft == joueur1.rect.topleft:
+            joueur1.dead = True
+
+        if bloc.etat == "solide" and bloc.rect.topleft == joueur2.rect.topleft:
+            joueur2.dead = True
 
         if bloc.timer > 240:
             bloc.timer = 0
@@ -521,17 +528,25 @@ while not done:
             bloc.afficher_attention()
 
     if joueur1.pos[1] < joueur2.pos[1]:
-        joueur1.afficher()
-        joueur2.afficher()
+        if not joueur1.dead:
+            joueur1.afficher()
+        if not joueur2.dead:
+            joueur2.afficher()
     elif joueur2.pos[1] < joueur1.pos[1]:
-        joueur2.afficher()
-        joueur1.afficher()
+        if not joueur2.dead:
+            joueur2.afficher()
+        if not joueur1.dead:
+            joueur1.afficher()
     else:
-        joueur2.afficher()
-        joueur1.afficher()
+        if not joueur2.dead:
+            joueur2.afficher()
+        if not joueur1.dead:
+            joueur1.afficher()
 
-    joueur1.afficher_slash()
-    joueur2.afficher_slash()
+    if not joueur1.dead:
+        joueur1.afficher_slash()
+    if not joueur1.dead:
+        joueur2.afficher_slash()
 
     pygame.display.flip()
 
