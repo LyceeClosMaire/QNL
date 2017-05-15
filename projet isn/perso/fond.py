@@ -439,7 +439,7 @@ slash2 = Slash()
 slash2.rect.topleft = (1088, -128)
 joueur2 = Bomberman([pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_t], "2", slash2)
 # on change aussi sa position
-joueur2.pos = [192,56]
+joueur2.pos = [832,56]
 
 # on crée des liste vides pour les blocs
 blocs = []
@@ -673,13 +673,13 @@ while not done:
         if len(collision) > 0:
                 if collision[0].etat == "solide":
                     if joueur2.direction == "droite":
-                        joueur2.pos[0] -= joueur2.vitesse_x
+                        joueur2.pos[0] -= 2*joueur2.vitesse_x
                     elif joueur2.direction == "gauche":
-                        joueur2.pos[0] -= joueur2.vitesse_x
+                        joueur2.pos[0] -= 2*joueur2.vitesse_x
                     elif joueur2.direction == "dos":
-                        joueur2.pos[1] -= joueur2.vitesse_y
+                        joueur2.pos[1] -= 2*joueur2.vitesse_y
                     elif joueur2.direction == "face":
-                        joueur2.pos[1] -= joueur2.vitesse_y
+                        joueur2.pos[1] -= 2*joueur2.vitesse_y
 
         if joueur2.pos[0] < 64:
             joueur2.pos[0] -= joueur2.vitesse_x
@@ -703,7 +703,7 @@ while not done:
             if joueur1.direction == "face":
                 joueur2.pos[1] += 64
             joueur2.knockback = False
-    
+
         if pygame.sprite.collide_rect(joueur2.slash, joueur1) and not joueur2.knockback_f_montant:
             joueur1.knockback = True
             joueur2.knockback_f_montant = True
@@ -747,12 +747,12 @@ while not done:
             bloc.etat = "solide"
 
         # si le bloc est solide et que le joueur 1 est dans le bloc
-        if bloc.etat == "solide" and pygame.sprite.collide_rect(joueur1, bloc):
+        if bloc.etat == "solide" and pygame.sprite.collide_rect(joueur1, bloc) and not joueur1.moving:
             # le joueur 1 meurt
             joueur1.dead = True
 
         # mêm chose pour le joueur 2
-        if bloc.etat == "solide" and pygame.sprite.collide_rect(joueur2, bloc):
+        if bloc.etat == "solide" and pygame.sprite.collide_rect(joueur2, bloc) and not joueur2.moving:
             joueur2.dead = True
 
     # si on a touché le joueur 2
@@ -772,7 +772,7 @@ while not done:
         else:
             u = 0
             joueur2.knockback_f_montant = False
-        
+
     # --- Drawing code
     # on remplit l'écran de noir
     screen.fill(BLACK)
@@ -821,6 +821,6 @@ while not done:
 
     # on fait en sorte qu'on est 30 frames par seconde
     clock.tick(30)
-
+    print(joueur1.dead)
 # si l'on sort de la boucle, on ferme le jeu
 pygame.quit()
